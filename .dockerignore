@@ -1,0 +1,98 @@
+# ============================================================================
+# Docker Ignore File
+# ============================================================================
+# Excludes unnecessary files from Docker build context for faster builds
+# and smaller images.
+
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+.env.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation and markdown
+*.md
+docs/
+README.md
+ARCHITECTURE.md
+QUICK_START.md
+START_APP.md
+API_ENDPOINTS_FIXED.md
+DEBUG_FIX.md
+FIXED_ENV_LOADING.md
+STREAMLIT_FIX.md
+VENV_SETUP.md
+
+# Logs
+logs/
+*.log
+
+# Data and uploads (should be mounted as volumes)
+data/
+uploads/
+*.pdf
+
+# Docker files (don't need to copy these into the image)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Scripts
+run_tests.sh
+
+# Images
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Environment files (will be passed at runtime)
+.env
+.env.example
+
+# Test files
+tests/
+pytest.ini

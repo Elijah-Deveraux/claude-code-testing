@@ -1,0 +1,14 @@
+[server]
+# Increase file upload size limit
+maxUploadSize = 200
+# Disable XSRF protection for local development to avoid session issues
+enableXsrfProtection = false
+enableCORS = true
+
+[browser]
+# Prevent browser from collecting usage stats
+gatherUsageStats = false
+
+[client]
+# Show errors in the browser
+showErrorDetails = true

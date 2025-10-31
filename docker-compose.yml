@@ -1,0 +1,145 @@
+version: '3.8'
+
+# ============================================================================
+# Docker Compose Configuration for PDF Summarization System
+# ============================================================================
+# This docker-compose file sets up the complete application stack:
+# - Qdrant vector database (optional)
+# - PDF Summarization application (FastAPI + Streamlit)
+#
+# Usage:
+#   docker-compose up -d              # Start all services
+#   docker-compose up app             # Start only app (in-memory mode)
+#   docker-compose down               # Stop all services
+#   docker-compose logs -f app        # View app logs
+# ============================================================================
+
+services:
+  # ==========================================================================
+  # Qdrant Vector Database (Optional - for persistent storage)
+  # ==========================================================================
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: pdf-summarizer-qdrant
+    ports:
+      - "6333:6333"  # REST API
+      - "6334:6334"  # gRPC API
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__GRPC_PORT=6334
+      - QDRANT__LOG_LEVEL=INFO
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/readyz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - pdf-summarizer-network
+    restart: unless-stopped
+
+  # ==========================================================================
+  # PDF Summarization Application (FastAPI + Streamlit)
+  # ==========================================================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pdf-summarizer-app
+    ports:
+      - "8000:8000"  # FastAPI Backend
+      - "8501:8501"  # Streamlit Frontend
+    environment:
+      # API Configuration
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - API_KEY=${API_KEY:-dev-key-12345}
+      - API_RATE_LIMIT=${API_RATE_LIMIT:-100}
+
+      # Google AI Configuration
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+
+      # LLM Configuration
+      - LLM_PROVIDER=${LLM_PROVIDER:-gemini}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.0-flash-exp}
+
+      # Embedding Configuration
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-models/text-embedding-004}
+      - EMBEDDING_DIMENSION=${EMBEDDING_DIMENSION:-768}
+
+      # Vector Database Configuration
+      # Option 1: Use Qdrant service (uncomment these lines)
+      # - QDRANT_URL=http://qdrant:6333
+      # - QDRANT_HOST=qdrant
+      # - QDRANT_PORT=6333
+
+      # Option 2: Use in-memory mode (default - no Qdrant needed)
+      - QDRANT_URL=:memory:
+
+      - QDRANT_COLLECTION_NAME=${QDRANT_COLLECTION_NAME:-pdf_documents}
+      - QDRANT_DISTANCE_METRIC=${QDRANT_DISTANCE_METRIC:-cosine}
+
+      # Text Processing Configuration
+      - CHUNK_SIZE=${CHUNK_SIZE:-1000}
+      - CHUNK_OVERLAP=${CHUNK_OVERLAP:-200}
+      - TOP_K_CHUNKS=${TOP_K_CHUNKS:-5}
+
+      # Summary Configuration
+      - BRIEF_SUMMARY_SENTENCES=${BRIEF_SUMMARY_SENTENCES:-5}
+      - DETAILED_SUMMARY_MIN_WORDS=${DETAILED_SUMMARY_MIN_WORDS:-300}
+      - DETAILED_SUMMARY_MAX_WORDS=${DETAILED_SUMMARY_MAX_WORDS:-500}
+
+      # Application Configuration
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - DEBUG=${DEBUG:-false}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+
+      # CORS Configuration
+      - CORS_ORIGINS=["http://localhost:8501", "http://localhost:3000"]
+
+      # Token Tracking
+      - MAX_CONTEXT_TOKENS=${MAX_CONTEXT_TOKENS:-4000}
+      - TOKEN_TRACKING_ENABLED=${TOKEN_TRACKING_ENABLED:-true}
+
+      # Cache Configuration
+      - CACHE_ENABLED=${CACHE_ENABLED:-true}
+      - CACHE_TTL_SECONDS=${CACHE_TTL_SECONDS:-3600}
+
+      # File Upload Configuration
+      - MAX_UPLOAD_SIZE_MB=${MAX_UPLOAD_SIZE_MB:-50}
+    volumes:
+      # Persist logs
+      - ./logs:/app/logs
+      # Persist uploaded files (optional)
+      - ./data:/app/data
+      # Persist uploads directory
+      - ./uploads:/app/uploads
+    depends_on:
+      qdrant:
+        condition: service_healthy
+        # Comment out depends_on if using in-memory mode
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - pdf-summarizer-network
+    restart: unless-stopped
+
+# ============================================================================
+# Networks
+# ============================================================================
+networks:
+  pdf-summarizer-network:
+    driver: bridge
+    name: pdf-summarizer-network
+
+# ============================================================================
+# Volumes
+# ============================================================================
+volumes:
+  qdrant_data:
+    name: pdf-summarizer-qdrant-data
