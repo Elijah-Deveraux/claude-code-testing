@@ -701,3 +701,4 @@ class RetrievalAgent:
         except Exception as e:
             logger.error(f"Error resetting databases: {e}")
             return False
+

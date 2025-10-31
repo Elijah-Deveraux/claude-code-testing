@@ -204,3 +204,4 @@ def clear_summary_cache():
 def get_cached_summary_count() -> int:
     """Get number of cached summaries."""
     return len(_summary_cache)
+

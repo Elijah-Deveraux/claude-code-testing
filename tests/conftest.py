@@ -336,3 +336,4 @@ def cleanup_test_files():
     for filepath in test_files:
         if os.path.exists(filepath):
             os.remove(filepath)
+

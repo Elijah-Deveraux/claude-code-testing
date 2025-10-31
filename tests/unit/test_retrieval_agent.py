@@ -336,3 +336,4 @@ class TestDatabaseReset:
             assert success is True
             mock_vector_store.reset_collection.assert_called_once()
             mock_metadata.clear.assert_called_once()
+

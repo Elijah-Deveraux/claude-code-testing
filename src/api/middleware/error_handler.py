@@ -232,3 +232,4 @@ def register_exception_handlers(app):
     app.add_exception_handler(Exception, general_exception_handler)
 
     logger.info("Exception handlers registered")
+

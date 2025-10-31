@@ -218,3 +218,4 @@ def get_metadata_store() -> MetadataStore:
         _metadata_store_instance = MetadataStore()
 
     return _metadata_store_instance
+

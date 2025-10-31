@@ -199,3 +199,4 @@ def get_rate_limit_config() -> Tuple[int, int]:
     window_seconds = 60  # Fixed at 1 minute window
 
     return max_requests, window_seconds
+

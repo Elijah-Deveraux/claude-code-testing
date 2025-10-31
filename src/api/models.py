@@ -286,3 +286,4 @@ class ValidationErrorResponse(BaseModel):
     detail: str = Field(..., description="Validation error details")
     status_code: int = Field(..., description="HTTP status code")
     fields: Optional[List[str]] = Field(None, description="Fields that failed validation")
+

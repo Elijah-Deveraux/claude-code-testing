@@ -481,3 +481,4 @@ class TestOpenAPIDocumentation:
         data = response.json()
         assert "openapi" in data
         assert "paths" in data
+

@@ -213,3 +213,4 @@ def record_processing_time(time_ms: int):
     """Record processing time for an operation."""
     _metrics["total_processing_time_ms"] += time_ms
     _metrics["processing_count"] += 1
+

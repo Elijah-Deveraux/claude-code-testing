@@ -139,3 +139,4 @@ def configure_logging_from_env() -> logging.Logger:
     )
 
     return config.setup_logging()
+

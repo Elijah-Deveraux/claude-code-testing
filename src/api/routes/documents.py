@@ -338,3 +338,4 @@ def get_document_metadata(doc_id: str) -> dict:
     if doc_id not in _documents_store:
         raise DocumentNotFoundError(doc_id)
     return _documents_store[doc_id]
+
